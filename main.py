@@ -8,16 +8,19 @@ import sklearn.discriminant_analysis as skl_da
 import sklearn.neighbors as skl_nb
 import sklearn.model_selection as skl_ms
 
+# 1. Train and validation set
+# 2. Use Accuracy
+# 3. Use all coloumns except 'Lead', 'Number words male' for X and coloumn 'Lead' for y
+# 4. 
+# 5. Use all inputs
+
+
+# Pre-process data
 csv = pd.read_csv('train.csv', na_values='?', dtype={'ID': str}).dropna().reset_index()
-X = csv.drop(columns=['Lead'])
+X = csv.drop(columns=['Lead', 'Number words male'])
 y = csv['Lead']
 X_train, X_val, y_train, y_val = skl_ms.train_test_split(X, y, test_size = 0.3, random_state = 1)
 
-# 1. Train and validation set
-# 2. Metrics: Accuracy 
-# 3. 
-# 4. 
-# 5. Use all inputs
 
 def Statistics():
     YEAR_LIST = np.arange(1939, 2015)
@@ -64,10 +67,43 @@ def LDA():
     model.fit(X_train, y_train)
     prediction = model.predict(X_val)
     misclassification = np.mean(prediction != y_val)
-    print(misclassification)
+    print(f'Error for LDA: {round(misclassification,3)}')
 
 
+def QDA():
+    model = skl_da.QuadraticDiscriminantAnalysis()
+    model.fit(X_train, y_train)
+    prediction = model.predict(X_val)
+    misclassification = np.mean(prediction != y_val)
+    print(f'Error for QDA: {round(misclassification,3)}')
+
+
+def CrossValidation():
+    # Cross-validation
+    models = []
+    models.append(skl_da.LinearDiscriminantAnalysis())
+    models.append(skl_da.QuadraticDiscriminantAnalysis())
+
+    n_fold = 10
+    misclassification = np.zeros((n_fold, len(models)))
+    cv = skl_ms.KFold(n_splits=n_fold, random_state = 1, shuffle=True)
+
+    for i, (train_index, val_index) in enumerate(cv.split(X)):
+        X_train, X_val = X.iloc[train_index], X.iloc[val_index]
+        y_train, y_val = y.iloc[train_index], y.iloc[val_index] 
+        for m in range(np.shape(models)[0]):
+            model = models[m]
+            model.fit(X_train, y_train)
+            prediction = model.predict(X_val)
+            misclassification[i, m] = np.mean(prediction != y_val)
     
+    plt.boxplot(misclassification)
+    plt.title('Cross validation error for different methods')
+    plt.xticks(np.arange(2)+1, ('LDA', 'QDA'))
+    plt.ylabel('validation error')
+    plt.show()
+
+
 
 def treebased():
     n=1
@@ -76,10 +112,13 @@ def treebased():
 
 
 def main():
-    
     # Statistics()
     # treebased()
     LDA()
+    QDA()
+    # CrossValidation()
+
+    
 
 if __name__ == '__main__':
     main()
