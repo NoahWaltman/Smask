@@ -50,10 +50,10 @@ def main():
     print(f'Average gross for males: {total_gross_male / number_of_males}')
     print(f'Average gross for females: {total_gross_female / number_of_females}')
     
-
-def DiscriminantAnalysis():
-    n = 0
-
+    
+    
+def treebased():
+    n=1
 
 
 
