@@ -8,11 +8,19 @@ import sklearn.discriminant_analysis as skl_da
 import sklearn.neighbors as skl_nb
 import sklearn.model_selection as skl_ms
 
-# 1. Train and validation set
-# 2. Use Accuracy
-# 3. Use all coloumns except 'Lead', 'Number words male' for X and coloumn 'Lead' for y
+# 1. Use a train and validation set
+#
+# 2. Use Accuracy. (Maybe switch to cross validation later)
+#
+# 3.  
+# 
 # 4. 
-# 5. Use all inputs
+# 
+# 5. Use all coloumns except ('Lead', 'Number words male') for X and 
+#    use only coloumn ('Lead') for y. 
+#    'Number words female' and 'Number words male' are colinear 
+#    so we only use one of them.
+#
 
 
 # Pre-process data
@@ -22,7 +30,7 @@ y = csv['Lead']
 X_train, X_val, y_train, y_val = skl_ms.train_test_split(X, y, test_size = 0.3, random_state = 1)
 
 
-def Statistics():
+def statistics():
     YEAR_LIST = np.arange(1939, 2015)
 
     # Number of males and females
@@ -62,6 +70,12 @@ def Statistics():
     print(f'Average gross for females: {total_gross_female / number_of_females}')
 
 
+def naive_classifier():
+    prediction = np.full(len(X_val), 'Male')
+    misclassification = np.mean(prediction != y_val)
+    print(f'Error for Naive Classifier: {round(misclassification,3)}')
+
+
 def LDA():
     model = skl_da.LinearDiscriminantAnalysis()
     model.fit(X_train, y_train)
@@ -78,8 +92,7 @@ def QDA():
     print(f'Error for QDA: {round(misclassification,3)}')
 
 
-def CrossValidation():
-    # Cross-validation
+def cross_validation():
     models = []
     models.append(skl_da.LinearDiscriminantAnalysis())
     models.append(skl_da.QuadraticDiscriminantAnalysis())
@@ -112,11 +125,12 @@ def treebased():
 
 
 def main():
-    # Statistics()
-    # treebased()
+    # statistics()
+    naive_classifier()
     LDA()
     QDA()
-    # CrossValidation()
+    # treebased()
+    # cross_validation()
 
     
 
