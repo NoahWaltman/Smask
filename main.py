@@ -12,14 +12,14 @@ csv = pd.read_csv('train.csv', na_values='?', dtype={'ID': str}).dropna().reset_
 X = csv.drop(columns=['Lead'])
 y = csv['Lead']
 X_train, X_val, y_train, y_val = skl_ms.train_test_split(X, y, test_size = 0.3, random_state = 1)
+
 # 1. Train and validation set
 # 2. Metrics: Accuracy 
 # 3. 
 # 4. 
 # 5. Use all inputs
 
-def main():
-    
+def Statistics():
     YEAR_LIST = np.arange(1939, 2015)
 
     # Number of males and females
@@ -57,13 +57,14 @@ def main():
 
     print(f'Average gross for males: {total_gross_male / number_of_males}')
     print(f'Average gross for females: {total_gross_female / number_of_females}')
-    
-
 
 
 def LDA():
     model = skl_da.LinearDiscriminantAnalysis()
-    model.fit(X, y)
+    model.fit(X_train, y_train)
+    prediction = model.predict(X_val)
+    misclassification = np.mean(prediction != y_val)
+    print(misclassification)
 
 
     
@@ -74,7 +75,11 @@ def treebased():
 
 
 
-
+def main():
+    
+    # Statistics()
+    # treebased()
+    LDA()
 
 if __name__ == '__main__':
     main()
