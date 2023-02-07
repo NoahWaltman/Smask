@@ -6,11 +6,12 @@ import sklearn.preprocessing as skl_pre
 import sklearn.linear_model as skl_lm
 import sklearn.discriminant_analysis as skl_da
 import sklearn.neighbors as skl_nb
+import sklearn.model_selection as skl_ms
 
 csv = pd.read_csv('train.csv', na_values='?', dtype={'ID': str}).dropna().reset_index()
 X = csv.drop(columns=['Lead'])
 y = csv['Lead']
-
+X_train, X_val, y_train, y_val = skl_ms.train_test_split(X, y, test_size = 0.3, random_state = 1)
 # 1. Train and validation set
 # 2. Metrics: Accuracy 
 # 3. 
@@ -61,7 +62,8 @@ def main():
 
 
 def LDA():
-    n = 0
+    model = skl_da.LinearDiscriminantAnalysis()
+    model.fit(X, y)
 
 
     
