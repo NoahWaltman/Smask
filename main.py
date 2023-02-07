@@ -8,10 +8,17 @@ import sklearn.discriminant_analysis as skl_da
 import sklearn.neighbors as skl_nb
 
 csv = pd.read_csv('train.csv', na_values='?', dtype={'ID': str}).dropna().reset_index()
+X = csv.drop(columns=['Lead'])
+y = csv['Lead']
+
+# 1. Train and validation set
+# 2. Metrics: Accuracy 
+# 3. 
+# 4. 
+# 5. Use all inputs
 
 def main():
-    LEAD = csv['Lead']
-    YEAR = csv['Year']
+    
     YEAR_LIST = np.arange(1939, 2015)
 
     # Number of males and females
@@ -50,8 +57,15 @@ def main():
     print(f'Average gross for males: {total_gross_male / number_of_males}')
     print(f'Average gross for females: {total_gross_female / number_of_females}')
     
+
+
+
+def LDA():
+    n = 0
+
+
     
-    
+
 def treebased():
     n=1
 
