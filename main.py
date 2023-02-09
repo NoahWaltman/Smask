@@ -7,6 +7,8 @@ import sklearn.linear_model as skl_lm
 import sklearn.discriminant_analysis as skl_da
 import sklearn.neighbors as skl_nb
 import sklearn.model_selection as skl_ms
+import sklearn.ensemble as skl_en
+import sklearn.tree as skl_tree
 
 # 1. Use a train and validation set
 #
@@ -92,10 +94,59 @@ def QDA():
     print(f'Error for QDA: {round(misclassification,3)}')
 
 
+def kNN(k, test=False):
+    model = skl_nb.KNeighborsClassifier(n_neighbors=k)
+    model.fit(X_train, y_train)
+    prediction = model.predict(X_val)
+    misclassification = np.mean(prediction != y_val)
+    if test:
+        return misclassification
+    print(f'Error for kNN: {round(misclassification,3)}')
+    
+
+
+def find_optimal_kNN():
+    N = 50
+    errors = np.zeros(N)
+    for k in range(N):
+        errors[k] = kNN(k+1, test=True)
+    min_error = np.min(errors)
+    min_k = np.argmin(errors)
+    print(min_k+1, round(min_error, 3))
+
+
+def forest():
+    model = skl_en.RandomForestClassifier()
+    model.fit(X_train, y_train)
+    prediction = model.predict(X_val)
+    misclassification = np.mean(prediction != y_val)
+    print(f'Error for forest: {round(misclassification,3)}')
+
+
+def bagging():
+    model = skl_en.BaggingClassifier()
+    model.fit(X_train, y_train)
+    prediction = model.predict(X_val)
+    misclassification = np.mean(prediction != y_val)
+    print(f'Error for bagging: {round(misclassification,3)}')
+
+
+def trees():
+    model = skl_tree.DecisionTreeClassifier(max_depth=3)
+    model.fit(X_train, y_train)
+    prediction = model.predict(X_val)
+    misclassification = np.mean(prediction != y_val)
+    print(f'Error for trees: {round(misclassification,3)}')
+
+
 def cross_validation():
     models = []
     models.append(skl_da.LinearDiscriminantAnalysis())
     models.append(skl_da.QuadraticDiscriminantAnalysis())
+    models.append(skl_nb.KNeighborsClassifier(n_neighbors=5))
+    models.append(skl_en.RandomForestClassifier())
+    models.append(skl_en.BaggingClassifier())
+    models.append(skl_tree.DecisionTreeClassifier())
 
     n_fold = 10
     misclassification = np.zeros((n_fold, len(models)))
@@ -104,7 +155,7 @@ def cross_validation():
     for i, (train_index, val_index) in enumerate(cv.split(X)):
         X_train, X_val = X.iloc[train_index], X.iloc[val_index]
         y_train, y_val = y.iloc[train_index], y.iloc[val_index] 
-        for m in range(np.shape(models)[0]):
+        for m in range(len(models)):
             model = models[m]
             model.fit(X_train, y_train)
             prediction = model.predict(X_val)
@@ -112,14 +163,10 @@ def cross_validation():
     
     plt.boxplot(misclassification)
     plt.title('Cross validation error for different methods')
-    plt.xticks(np.arange(2)+1, ('LDA', 'QDA'))
+    plt.xticks(np.arange(6)+1, ('LDA', 'QDA', 'kNN', 'Forest', 'Bagging', 'Trees'))
     plt.ylabel('validation error')
     plt.show()
 
-
-
-def treebased():
-    n=1
 
 
 
@@ -129,8 +176,12 @@ def main():
     naive_classifier()
     LDA()
     QDA()
-    # treebased()
-    # cross_validation()
+    kNN(k=5)
+    forest()
+    bagging()
+    trees()
+    # find_optimal_kNN()
+    cross_validation()
 
     
 
