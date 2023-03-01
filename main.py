@@ -9,6 +9,7 @@ import sklearn.neighbors as skl_nb
 import sklearn.model_selection as skl_ms
 import sklearn.ensemble as skl_en
 import sklearn.tree as skl_tree
+import sklearn.metrics as skl_met
 
 # 1. Use a train and validation set
 #
@@ -82,6 +83,7 @@ def LDA():
     model = skl_da.LinearDiscriminantAnalysis()
     model.fit(X_train, y_train)
     prediction = model.predict(X_val)
+    f1_score = skl_met.f1_score(prediction, y_val, pos_label='Male')
     misclassification = np.mean(prediction != y_val)
     print(f'Error for LDA: {round(misclassification,3)}')
 
