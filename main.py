@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
+import csv as csv_module
 import sklearn.preprocessing as skl_pre
 import sklearn.linear_model as skl_lm
 import sklearn.discriminant_analysis as skl_da
@@ -185,6 +185,25 @@ def cross_validation():
     plt.show()
 
 
+def create_prediction():
+    model = skl_da.QuadraticDiscriminantAnalysis()
+    model.fit(X_train, y_train)
+    test_csv = pd.read_csv('test.csv', na_values='?', dtype={'ID': str}).dropna().reset_index()
+    X_test = test_csv.drop(columns=['Number words male'])
+    prediction = model.predict(X_test)
+    prediction_list = []
+    for p in prediction:
+        if p == 'Male':
+            prediction_list.append(0)
+        else:
+            prediction_list.append(1)
+
+    with open('predictions.csv', 'w', newline='') as file:
+        writer = csv_module.writer(file)
+        writer.writerow(prediction_list)
+     
+ 
+
 
 def main():
     # statistics()
@@ -196,7 +215,8 @@ def main():
     bagging()
     trees()
     # find_optimal_kNN()
-    cross_validation()
+    # cross_validation()
+    create_prediction()
 
     
 
