@@ -173,14 +173,16 @@ def cross_validation():
             model.fit(X_train, y_train)
             prediction = model.predict(X_val)
             misclassification[i, m] = np.mean(prediction != y_val)
-    
+
+    for m in range(len(models)):
+        print(f'Average missclasification for {models[m]}: {np.mean(misclassification[m])}')
+
+
     plt.boxplot(misclassification)
     plt.title('Cross validation error for different methods')
     plt.xticks(np.arange(6)+1, ('LDA', 'QDA', 'kNN', 'Forest', 'Bagging', 'Trees'))
     plt.ylabel('validation error')
     plt.show()
-
-
 
 
 
