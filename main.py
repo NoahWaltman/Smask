@@ -10,6 +10,7 @@ import sklearn.model_selection as skl_ms
 import sklearn.ensemble as skl_en
 import sklearn.tree as skl_tree
 import sklearn.metrics as skl_met
+from operator import add, truediv
 
 # 1. Use a train and validation set
 #
@@ -34,43 +35,60 @@ X_train, X_val, y_train, y_val = skl_ms.train_test_split(X, y, test_size = 0.3, 
 
 
 def statistics():
-    YEAR_LIST = np.arange(1939, 2015)
-
-    # Number of males and females
-    number_of_males = 0
-    number_of_females = 0
 
     # Create list of males and females
-    number_of_males_list = np.zeros(len(YEAR_LIST))
-    number_of_females_list = np.zeros(len(YEAR_LIST))
+    male_dict = {}
+    female_dict = {}
 
-    # Gross income
-    total_gross_male = 0
-    total_gross_female = 0
+    male_gross = []
+    female_gross = []
 
-    for row in csv.itertuples():
-        if row.Lead == 'Male':
-            number_of_males_list[int(row.Year) - 1940] += 1
-            number_of_males += 1
-            total_gross_male += int(row.Gross)
-        else:
-            number_of_females_list[int(row.Year) - 1940] += 1
-            number_of_females += 1
-            total_gross_female += int(row.Gross)
+    for index, row in csv.iterrows():
+        year = int(row['Year'])
+        num_male_actors = int(row['Number of male actors'])
+        num_female_actors = int(row['Number of female actors'])
         
+        male_words = int(row['Number words male'])
+        female_words = int(row['Number words female'])
+        gross = int(row['Gross'])
+        
+        if male_words > female_words:
+            male_gross.append(gross)
+        else:
+            female_gross.append(gross)
+        
+
+        if year in male_dict:
+            male_dict[year] += num_male_actors
+        else:
+            male_dict[year] = num_male_actors
+        
+        if year in female_dict:
+            female_dict[year] += num_female_actors
+        else:
+            female_dict[year] = num_female_actors
+
+
+    male_list = sorted(list(male_dict.values()))
+    female_list = sorted(list(female_dict.values()))
+    total_list = list(map(add, male_list, female_list))
+    year = sorted(list(male_dict.keys()))
+    percent_list = list(map(truediv, male_list, total_list))
+    
+
     # Plot the results    
-    plt.plot(YEAR_LIST, number_of_males_list, label = 'male')
-    plt.plot(YEAR_LIST, number_of_females_list, label = 'female')
+    plt.scatter(year, percent_list, s=8)
+    m, b = np.polyfit(year, percent_list, 1)
+    plt.plot(year, m*np.array(year) + b, color='red')
+    plt.ylim(0,1)
     plt.xlabel('year')
-    plt.ylabel('number of lead actors')
-    plt.legend()
+    plt.ylabel('percentage of male actors')
+    plt.show()
+    plt.boxplot((male_gross, female_gross), sym='')
+    plt.xticks(np.arange(2)+1, ('male', 'female'))
+    plt.ylabel('gross income')
     plt.show()
         
-    print(f'Number of males: {number_of_males}' )
-    print(f'Number of females: {number_of_females}')
-
-    print(f'Average gross for males: {total_gross_male / number_of_males}')
-    print(f'Average gross for females: {total_gross_female / number_of_females}')
 
 
 def naive_classifier():
@@ -97,6 +115,7 @@ def QDA():
     misclassification = np.mean(prediction != y_val)
     print(f'Error for QDA: {round(misclassification,3)}')
     print(f'f1 score for LDA: {f1_score}')
+    return model
 
 
 def kNN(k, test=False):
@@ -186,8 +205,7 @@ def cross_validation():
 
 
 def create_prediction():
-    model = skl_da.QuadraticDiscriminantAnalysis()
-    model.fit(X_train, y_train)
+    model = QDA()
     test_csv = pd.read_csv('test.csv', na_values='?', dtype={'ID': str}).dropna().reset_index()
     X_test = test_csv.drop(columns=['Number words male'])
     prediction = model.predict(X_test)
@@ -206,8 +224,8 @@ def create_prediction():
 
 
 def main():
-    # statistics()
-    naive_classifier()
+    statistics()
+    '''naive_classifier()
     LDA()
     QDA()
     kNN(k=5)
@@ -216,7 +234,7 @@ def main():
     trees()
     # find_optimal_kNN()
     # cross_validation()
-    create_prediction()
+    create_prediction()'''
 
     
 
