@@ -86,24 +86,29 @@ def LDA():
     f1_score = skl_met.f1_score(prediction, y_val, pos_label='Male')
     misclassification = np.mean(prediction != y_val)
     print(f'Error for LDA: {round(misclassification,3)}')
+    print(f'f1 score for LDA: {f1_score}')
 
 
 def QDA():
     model = skl_da.QuadraticDiscriminantAnalysis()
     model.fit(X_train, y_train)
     prediction = model.predict(X_val)
+    f1_score = skl_met.f1_score(prediction, y_val, pos_label='Male')
     misclassification = np.mean(prediction != y_val)
     print(f'Error for QDA: {round(misclassification,3)}')
+    print(f'f1 score for LDA: {f1_score}')
 
 
 def kNN(k, test=False):
     model = skl_nb.KNeighborsClassifier(n_neighbors=k)
     model.fit(X_train, y_train)
     prediction = model.predict(X_val)
+    f1_score = skl_met.f1_score(prediction, y_val, pos_label='Male')
     misclassification = np.mean(prediction != y_val)
     if test:
         return misclassification
     print(f'Error for kNN: {round(misclassification,3)}')
+    print(f'f1 score for LDA: {f1_score}')
     
 
 
@@ -121,24 +126,30 @@ def forest():
     model = skl_en.RandomForestClassifier()
     model.fit(X_train, y_train)
     prediction = model.predict(X_val)
+    f1_score = skl_met.f1_score(prediction, y_val, pos_label='Male')
     misclassification = np.mean(prediction != y_val)
     print(f'Error for forest: {round(misclassification,3)}')
+    print(f'f1 score for LDA: {f1_score}')
 
 
 def bagging():
     model = skl_en.BaggingClassifier()
     model.fit(X_train, y_train)
     prediction = model.predict(X_val)
+    f1_score = skl_met.f1_score(prediction, y_val, pos_label='Male')
     misclassification = np.mean(prediction != y_val)
     print(f'Error for bagging: {round(misclassification,3)}')
+    print(f'f1 score for LDA: {f1_score}')
 
 
 def trees():
     model = skl_tree.DecisionTreeClassifier(max_depth=3)
     model.fit(X_train, y_train)
     prediction = model.predict(X_val)
+    f1_score = skl_met.f1_score(prediction, y_val, pos_label='Male')
     misclassification = np.mean(prediction != y_val)
     print(f'Error for trees: {round(misclassification,3)}')
+    print(f'f1 score for LDA: {f1_score}')
 
 
 def cross_validation():
